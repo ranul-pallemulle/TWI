@@ -31,6 +31,11 @@ int twi_write_byte(unsigned char byte) {
   return 0;
 }
 
+/* twi_clear_flag: clear TWINT and enable acknowledge */
+int twi_clear_flag(void) {
+  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE) | (1 << TWEA);
+}
+
 /* twi_read_byte_ACK: read a data byte into a char and send back an ACK */
 int twi_read_byte_ACK(unsigned char *byteptr) {
   *byteptr = TWDR;

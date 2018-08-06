@@ -12,6 +12,8 @@ int twi_send_stop(void);
 
 int twi_write_byte(unsigned char byte);
 
+int twi_clear_flag(void);
+
 int twi_read_byte_ACK(unsigned char *byteptr);
 
 int twi_read_byte_NACK(unsigned char *byteptr);
