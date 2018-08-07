@@ -3,7 +3,7 @@
 
 /* TWSR codes for ATmega328p */
 
-/* Common codes */
+/* Common master codes */
 #define START_SENT 0x08
 #define REP_START_SENT 0x10
 #define ARBTR_LOST 0x38
