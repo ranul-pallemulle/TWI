@@ -8,20 +8,17 @@
  *
  * Written by Ranul Pallemulle
  * 07/08/2018
-*/
+ */
+
+/* NOTES :
+ * Change codes include so that file is specified by command line macro definition 
+ */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "twi.h" /* for basic twi functions */
-#include "atmega328p_codes.h" /* status codes, change for different hardware */
-
-#define GENCALLRESPONSE 0 /* set to 1 to respond to gencall */
-#define TRANSMITTER 1 /* slave transmitter mode */
-#define RECEIVER 0 /* slave receiver mode */
-
-#ifndef MAXBUFFLEN
-#define MAXBUFFLEN 30 /* max number of bytes to receive */
-#endif /* MAXBUFFLEN */
+#include "atmega328p_codes.h" /* status codes, change for different chip */
+#include "../include/twi_slave.h"
 
 static void (*call_back)(unsigned char* data, unsigned char len);
 static unsigned char databuf[MAXBUFFLEN];
@@ -35,13 +32,16 @@ void set_callback(void (*func)(unsigned char*, unsigned char)) {
 }
 
 /* set_data: sets databuf to contain data to be sent on next transmission */
+/* NOTE: THIS FUNCTION ENABLES EXTERNAL INTERRUPTS */
 int set_data(unsigned char *data, unsigned char len) {
+  unsigned char *ptr;
+  twi_disable();
   if (len > MAXBUFFLEN)
     return -1;
   nbytes = len;
-  buffptr = databuf;
+  ptr = databuf;
   while (len-- > 0)
-    *buffptr++ = *data++;
+    *ptr++ = *data++;
   return 0;
 }
 
@@ -50,19 +50,22 @@ void set_mode(char m) {
 }
 
 /* slave_init: put device in slave receive mode. Argument is 7 bit address */
-void slave_init(unsigned char addr) {
-  twi_set_self_slave_address(addr, GENCALLRESPONSE); /* disabled respond to gen call addr */
+int slave_init(unsigned char addr, unsigned char genresponse) {
+  if (twi_set_self_slave_address(addr, genresponse) == -1)
+    return -1;
   twi_clear_flag();
+  return 0;
 }
 
 /* Interrupt Service Routine */
 ISR(TWI_vect) {
   switch(TWSR) {
-
+  
   case ARBTR_LOST_SLA_W_RECVD_ACK:
   case ARBTR_LOST_GEN_ADDR_RECVD_ACK:
   case GEN_ADDR_RECVD_ACK:
   case SLA_W_RECVD_ACK: /* master wants to send data */
+    mode = RECEIVER;
     buffptr = databuf;
     nbytes = 0;
     twi_clear_flag(); /* ACK the data byte that will be received */
@@ -84,8 +87,10 @@ ISR(TWI_vect) {
 
   case ARBTR_LOST_SLA_R_RECVD_ACK:
   case SLA_R_RECVD_ACK: /* master wants to receive data */
+    mode = TRANSMITTER;
     buffptr = databuf;
-    twi_write_byte(*buffptr++); /* if databuf empty, might be a garbage value */
+    if (nbytes != 0)
+      twi_write_byte(*buffptr++);
     break;
 
   case SLAV_DATA_SENT_ACK:
@@ -98,7 +103,7 @@ ISR(TWI_vect) {
     break;
 
   case STOP_OR_REP_START_RECVD:
-    if (mode == RECEIVER)
+    if (mode == RECEIVER && call_back != NULL)
       call_back(databuf, nbytes);
     twi_clear_flag();
     break;
