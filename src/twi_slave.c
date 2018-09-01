@@ -18,7 +18,7 @@
 #include <avr/interrupt.h>
 #include "twi.h" /* for basic twi functions */
 #include "atmega328p_codes.h" /* status codes, change for different chip */
-#include "../include/twi_slave.h"
+#include "twi_slave.h"
 
 static void (*call_back)(unsigned char* data, unsigned char len);
 static unsigned char databuf[MAXBUFFLEN];

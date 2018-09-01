@@ -2,7 +2,10 @@ SRC=./src
 OUT=./out
 MCU=atmega328p
 
-all : $(OUT)/twi.o $(OUT)/twi_slave.o
+all : $(OUT)/twi.o $(OUT)/twi_slave.o $(OUT)/twi_master_poll.o
+
+$(OUT)/twi_master_poll.o : $(SRC)/twi_master_poll.c
+	avr-gcc -c $(SRC)/twi_master_poll.c -mmcu=$(MCU) -o $@ -I ./include/
 
 $(OUT)/twi_slave.o : $(SRC)/twi_slave.c
 	avr-gcc -c $(SRC)/twi_slave.c -mmcu=$(MCU) -o $@ -I ./include/

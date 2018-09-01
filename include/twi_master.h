@@ -1,19 +1,13 @@
-/* twi_master: an interrupt driven TWI master receiver/transmitter. 
- * A slave structure exists for each slave device to be communicated 
- * with on the bus. Master processes a linked list of the slaves until
- * no more slaves are left. Then master issues a stop signal. A given
- * slave may appear more than once in the list (e.g. to do a
- * write and then, after a repeated start condition, a read). A single 
- * data buffer exists for all transfers to limit storage use.
- * Another option is to have a pointer to data as a member rather than 
- * a buffer itself.
- */
-
 #define READ 1
 #define WRITE 0
 
+#define NULL 0
+
 struct slave {
+  struct slave *next;
   unsigned char addr; /* slave address */
+  unsigned char *dataptr;
+  unsigned char maxbytes; /* length of data array */
   char readwrite; /* read = 1, write = 0 */
   int nbytes; /* number of bytes to be written or received */
   char complete; /* transfer for this slave is done : 1, incomplete: 0 */
