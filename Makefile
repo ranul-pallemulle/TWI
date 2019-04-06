@@ -1,6 +1,7 @@
 SRC=./src
 OUT=./out
-MCU=atmega328p
+# MCU=atmega328p
+MCU=atmega644
 
 all : $(OUT)/twi.o $(OUT)/twi_slave.o $(OUT)/twi_master_poll.o
 

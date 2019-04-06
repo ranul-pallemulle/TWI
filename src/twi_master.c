@@ -1,7 +1,3 @@
-/* 
- * Interrupt driven TWI master receiver/transmitter. Structures representing
- * slaves are put in a linked list in order of communication. 
- */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "twi.h"
