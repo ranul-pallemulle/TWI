@@ -1,7 +1,7 @@
-#ifndef ATMEGA328P_CODES_H
-#define ATMEGA328P_CODES_H
+#ifndef ATMEGA328P_H
+#define ATMEGA328P_H
 
-/* TWSR codes for ATmega328p */
+/* TWSR codes (here defined for Atmega328p). */
 
 /* Common master codes */
 #define START_SENT 0x08
@@ -42,5 +42,4 @@
 #define NO_STATE_INFO 0xF8
 #define BUS_ERROR 0x00
 
-
-#endif /* ATMEGA328P_CODES_H */
+#endif /* ATMEGA328P_H */

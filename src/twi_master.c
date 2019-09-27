@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "twi.h"
-#include "atmega328p_codes.h"
+#include "status_codes.h"
 #include "../include/twi_master.h"
 
 struct slave *current;
@@ -16,6 +16,7 @@ int master_start(struct slave *head) {
   current = head;
   if (twi_send_start() == -1)
     return -1;
+  return 0;
 }
 
 int master_write_next_byte(struct slave *slav) {
